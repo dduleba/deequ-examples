@@ -1,18 +1,19 @@
 # Deequ Constraint suggestions
 
+Read data to dataframe
 
 ```scala
-val df:DataFrame = spark.read.format("csv")
-      .option("header", "true")
-      .load(getClass.getResource("/day.csv").getPath)
-    val dfFirstDay = df.filter("dteday rlike '2011-01-'")
+val df: DataFrame = spark.read.format("csv")
+  .option("header", "true")
+  .load(getClass.getResource("/day.csv").getPath)
+  .filter("dteday rlike '2011-01-'")
 ```
 Important is to do correct filtering
 - check it out with year only filtering
 
 ```scala
  val suggestionResult = ConstraintSuggestionRunner()
-      .onData(dfFirstDay)
+      .onData(df)
       .addConstraintRules(Rules.DEFAULT)
       .run()
 

@@ -10,11 +10,11 @@ object ConstraintSuggestionDay extends App {
     val df: DataFrame = spark.read.format("csv")
       .option("header", "true")
       .load(getClass.getResource("/day.csv").getPath)
-    val dfFirstDay = df.filter("dteday rlike '2011-01-'")
-    dfFirstDay.show(numRows = 1000, truncate = false)
+      .filter("dteday rlike '2011-01-'")
+    df.show(numRows = 1000, truncate = false)
 
     val suggestionResult = ConstraintSuggestionRunner()
-      .onData(dfFirstDay)
+      .onData(df)
       .addConstraintRules(Rules.DEFAULT)
       .run()
 
