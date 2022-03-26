@@ -8,6 +8,10 @@ It is created to exercise and show some usecases of [Deequ - Unit Tests for Data
 
 ## examples
 
+First step to get familiar with deequ and data:
 [Constraints Suggestion for bike sharing day data](src/main/scala/com/dd/deequ/example/day/constraint_suggestions.md)
 
+Constraints based on suggestions:
 [verification examples](src/main/scala/com/dd/deequ/example/day/verify_data.md)
+
+[Anomaly detection example](src/main/scala/com/dd/deequ/example/day/anomaly_detection.md)
