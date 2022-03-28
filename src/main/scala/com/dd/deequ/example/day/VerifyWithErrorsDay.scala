@@ -22,7 +22,7 @@ object VerifyWithErrorsDay extends App {
       .onData(df)
       .addCheck(Check(CheckLevel.Error, "unit testing Bike sharing day data")
         // not satisfied constraints
-        .isUnique("temp")
+        .isUnique("temp").where("yr>=0")
         .hasDistinctness(Seq("temp"), _ == 1)
         .hasDistinctness(Seq("yr"), _ < 1 / 366, Some(s"Check that there is no big distinctness of yr ${1.0 / 366}"))
         .hasDistinctness(Seq("instant"), _ < 1, Some("Check for instant uniqueness"))

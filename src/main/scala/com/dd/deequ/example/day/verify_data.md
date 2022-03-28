@@ -63,21 +63,23 @@ val df: DataFrame = spark.read.format("csv")
 ```
 
 We can add hint parameter to display some extra information in case of constraint failure
+* additionally with the where method your constraint can be limited to data subset
 ```scala
-    val verificationResult = VerificationSuite()
-      .onData(df)
-      .addCheck(Check(CheckLevel.Error, "unit testing Bike sharing day data")
-        // not satisfied constraints
-        .isUnique("temp")
-        .hasDistinctness(Seq("temp"), _ == 1)
-        .hasDistinctness(Seq("yr"), _ < 1 / 366, Some(s"Check that there is no big distinctness of yr ${1.0 / 366}"))
-        .hasDistinctness(Seq("instant"), _ < 1, Some("Check for instant uniqueness"))
-        .hasSize(_ == 365, Some("Expected size 365"))
-        .hasSum("cnt", _ > 10000000, Some("Expected bike shares cnt > 10000000"))
-        .hasSum("short_cnt", _ > 10000000, hint=Some("Expected bike shares cnt > 10000000"))
-        .hasCorrelation("short_season","double_temp", _ > 0.5)
-        .hasCorrelation("double_temp","short_cnt", _ < 0.5)
-      ).run
+val verificationResult = VerificationSuite()
+  .onData(df)
+  .addCheck(Check(CheckLevel.Error, "unit testing Bike sharing day data")
+    // not satisfied constraints
+    .isUnique("temp").where("yr>=0")
+    .hasDistinctness(Seq("temp"), _ == 1)
+    .hasDistinctness(Seq("yr"), _ < 1 / 366, Some(s"Check that there is no big distinctness of yr ${1.0 / 366}"))
+    .hasDistinctness(Seq("instant"), _ < 1, Some("Check for instant uniqueness"))
+    .hasSize(_ == 365, Some("Expected size 365"))
+    .hasSum("cnt", _ > 10000000, Some("Expected bike shares cnt > 10000000"))
+    .hasSum("short_cnt", _ > 10000000, hint=Some("Expected bike shares cnt > 10000000"))
+    .hasCorrelation("short_season","double_temp", _ > 0.5)
+    .hasCorrelation("double_temp","short_cnt", _ < 0.5)
+  ).run
+
 ```
 
 Convert results to dataframe
@@ -91,12 +93,12 @@ Output:
 +----------------------------------+-----------+------------+-----------------------------------------------------------------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |check                             |check_level|check_status|constraint                                                       |constraint_status|constraint_message                                                                                                                                                                     |
 +----------------------------------+-----------+------------+-----------------------------------------------------------------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|unit testing Bike sharing day data|Error      |Error       |UniquenessConstraint(Uniqueness(List(temp),None))                |Failure          |Value: 0.6311475409836066 does not meet the constraint requirement!                                                                                                                    |
+|unit testing Bike sharing day data|Error      |Error       |UniquenessConstraint(Uniqueness(List(temp),Some(yr>=0)))         |Failure          |Value: 0.6311475409836066 does not meet the constraint requirement!                                                                                                                    |
 |unit testing Bike sharing day data|Error      |Error       |DistinctnessConstraint(Distinctness(List(temp),None))            |Failure          |Value: 0.8005464480874317 does not meet the constraint requirement!                                                                                                                    |
 |unit testing Bike sharing day data|Error      |Error       |DistinctnessConstraint(Distinctness(List(yr),None))              |Failure          |Value: 0.00273224043715847 does not meet the constraint requirement! Check that there is no big distinctness of yr 0.00273224043715847                                                 |
 |unit testing Bike sharing day data|Error      |Error       |DistinctnessConstraint(Distinctness(List(instant),None))         |Failure          |Value: 1.0 does not meet the constraint requirement! Check for instant uniqueness                                                                                                      |
 |unit testing Bike sharing day data|Error      |Error       |SizeConstraint(Size(None))                                       |Failure          |Value: 366 does not meet the constraint requirement! Expected size 365                                                                                                                 |
-|unit testing Bike sharing day data|Error      |Error       |SumConstraint(Sum(cnt,None))                                     |Failure          |Expected type of column cnt to be one of (LongType,IntegerType,DoubleType,org.apache.spark.sql.types.DecimalType$@66716959,ByteType,FloatType,ShortType), but found StringType instead!|
+|unit testing Bike sharing day data|Error      |Error       |SumConstraint(Sum(cnt,None))                                     |Failure          |Expected type of column cnt to be one of (LongType,IntegerType,DoubleType,org.apache.spark.sql.types.DecimalType$@37fffef3,ByteType,FloatType,ShortType), but found StringType instead!|
 |unit testing Bike sharing day data|Error      |Error       |SumConstraint(Sum(short_cnt,None))                               |Failure          |Value: 2049576.0 does not meet the constraint requirement! Expected bike shares cnt > 10000000                                                                                         |
 |unit testing Bike sharing day data|Error      |Error       |CorrelationConstraint(Correlation(short_season,double_temp,None))|Failure          |Value: 0.29387642123889274 does not meet the constraint requirement!                                                                                                                   |
 |unit testing Bike sharing day data|Error      |Error       |CorrelationConstraint(Correlation(double_temp,short_cnt,None))   |Failure          |Value: 0.7137931988838034 does not meet the constraint requirement!                                                                                                                    |

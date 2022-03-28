@@ -1,8 +1,8 @@
 # deequ-examples
 
-It is created to exercise and show some usecases of [Deequ - Unit Tests for Data](https://github.com/awslabs/deequ) 
+This content is created to exercise and show deequ use cases with data examples
 
-## data source for exercises
+[Deequ - Unit Tests for Data](https://github.com/awslabs/deequ)
 
 [Bike sharing dataset](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset#)
 
